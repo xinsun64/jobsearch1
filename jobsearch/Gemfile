@@ -32,6 +32,9 @@ gem 'spring',        group: :development
 # Use unicorn as the app server
 # gem 'unicorn'
 
+gem 'xml-simple', :require => 'xmlsimple'
+
+gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
