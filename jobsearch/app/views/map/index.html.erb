@@ -13,13 +13,13 @@
   </div>
 
   <script type="text/javascript">
-var markers = gon.result;
+var markers = gon.result['result'];
 window.onload = function () {
     LoadMap();
 }
 function LoadMap() {
     var mapOptions = {
-        center: new google.maps.LatLng(markers[0].latitude, markers[0].longitude),
+        center: new google.maps.LatLng(parseFloat(markers[0].latitude), parseFloat(markers[0].longitude)),
         zoom: 8,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
@@ -36,7 +36,7 @@ function LoadMap() {
         start_letter_code++;
  
         var data = markers[i]
-        var myLatlng = new google.maps.LatLng(data.latitude+(Math.random()*2-1)*0.01, data.longitude+(Math.random()*2-1)*0.01);
+        var myLatlng = new google.maps.LatLng(parseFloat(data.latitude)+(Math.random()*2-1)*0.01, parseFloat(data.longitude)+(Math.random()*2-1)*0.01);
         var marker = new google.maps.Marker({
             position: myLatlng,
             map: map,
@@ -59,6 +59,7 @@ function LoadMap() {
     map.setCenter(latlngbounds.getCenter());
     map.fitBounds(latlngbounds);
 }
+// alert(markers);
   </script> 
 </body>
 </html>

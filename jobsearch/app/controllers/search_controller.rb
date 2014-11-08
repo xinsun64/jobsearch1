@@ -24,7 +24,8 @@ class SearchController < ApplicationController
 		if @jobs_found.nil?
 		   @jobs_found=[]
 		   flash[:notice] = "No jobs found" 
-		 
+		 else
+		 		session[:jobs] = @jobs_found
 		 end  	 
 
 	end
