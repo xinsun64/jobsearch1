@@ -1,0 +1,61 @@
+<table>
+  <tr>
+    <td>
+      <div id="dvMap" style="width: 600px; height: 600px">
+      </div>
+    </td>
+    <td>
+      <div id = "legend" style="width: 600px; height: 600px; overflow:auto">
+      </div>
+    </td>
+  </tr>
+</table>
+
+  <script type="text/javascript">
+var markers = gon.jobs;
+window.onload = function () {
+    LoadMap();
+}
+function LoadMap() {
+    var mapOptions = {
+        center: new google.maps.LatLng(parseFloat(markers[0].latitude), parseFloat(markers[0].longitude)),
+        zoom: 8,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var infoWindow = new google.maps.InfoWindow();
+    var latlngbounds = new google.maps.LatLngBounds();
+    var map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
+    var legend = document.getElementById("legend");
+    legend.innerHTML = "";
+    var start_letter_code = 97;
+    var marker_color = "ff4949";
+    var marker_text_color = "FFFFFF";
+    for (var i = 0; i < markers.length; i++) {
+        var character = String.fromCharCode(start_letter_code).toUpperCase();
+        start_letter_code++;
+ 
+        var data = markers[i]
+        var myLatlng = new google.maps.LatLng(parseFloat(data.latitude)+(Math.random()*2-1)*0.01, parseFloat(data.longitude)+(Math.random()*2-1)*0.01);
+        var marker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            title: data.jobtitle,
+            icon: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=" + character + "|" + marker_color + "|" + marker_text_color
+        });
+        (function (marker, data) {
+            google.maps.event.addListener(marker, "click", function (e) {
+                infoWindow.setContent("<div style = 'width:300px;height:150px;float:auto'>" + data.jobtitle + "<br>"
+                	+ data.company + "<br>" + data.snippet + "<br>" 
+                	+ '<a href="' + data.url + '">Source</a>' + "</div>");
+                infoWindow.open(map, marker);
+            });
+        })(marker, data);
+        latlngbounds.extend(marker.position);
+ 
+        legend.innerHTML += "<div style = 'margin:5px'><img align = 'middle' src = '" + marker.icon + "' />&nbsp;Job Title: " + marker.title + "<br>Company: " + data.company + "</a><br>Description: " + data.snippet + "</div><hr>";
+    }
+    var bounds = new google.maps.LatLngBounds();
+    map.setCenter(latlngbounds.getCenter());
+    map.fitBounds(latlngbounds);
+}
+  </script> 

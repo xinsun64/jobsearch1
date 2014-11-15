@@ -6,7 +6,7 @@ include REXML
 class SearchController < ApplicationController
 	def search
 		uri = URI('http://api.indeed.com/ads/apisearch?publisher=7860093636562111&q=java&l=austin%2C+tx&sort=&radius=&st=&jt=&start=&limit=1&fromage=&filter=&latlong=1&co=us&chnl=&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29&v=2')
-		hash={'keyword'=>'civil','location'=>'austin'
+		hash={'keyword'=>'java','location'=>'mountain+view'
     		}
 		urlHead = "http://api.indeed.com/ads/apisearch?publisher=7860093636562111"
 		urlMid = "&q="+hash['keyword']+"&l="+hash['location']

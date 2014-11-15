@@ -1,0 +1,87 @@
+<div id="names" class="complist">
+  Companies: 
+  <% @comps.each { |comp| %>
+    <button type="ui-button" onclick="getCompData('<%= comp %>')" style="font-size:10pt"><%= comp %></button>
+  <% } %>
+</div>
+<div id="tabs">
+  <ul>
+    <li><a href="#tabs-1">Overview</a></li>
+    <li><a href="#tabs-2">News</a></li>
+    <li><a href="#tabs-3">Blogs</a></li>
+  </ul>
+  <div id="tabs-1">
+    <p id="overview">Company Overvies</p>
+  </div>
+  <div id="tabs-2">
+    <p id="news">Company News</p>
+  </div>
+  <div id="tabs-3">
+    <p id="blog">Company Blogs</p>
+  </div>
+</div>
+<script>
+function createCORSRequest(method, url){
+  var xhr = new XMLHttpRequest();
+  if ("withCredentials" in xhr){
+      // XHR has 'withCredentials' property only if it supports CORS
+      xhr.open(method, url, true);
+  } else if (typeof XDomainRequest != "undefined"){ // if IE use XDR
+      xhr = new XDomainRequest();
+      xhr.open(method, url);
+  } else {
+      xhr = null;
+  }
+  return xhr;
+}
+
+function getElement(text, elem) {
+  return text.match('<title>(.*)?</title>');
+}
+
+function getCompData(comp) {
+  var url = 'http://api.newscred.com/articles?access_key=c4bcc3f7c9bf9ec159f51da0a86ca658&get_topics=False&pagesize=20&min_length=10&max_length=200&query=+"' + comp + '"';
+
+  // &sources=681039b652bd135d172f96332fb57f2c
+  var xhr = createCORSRequest('GET', url);
+  if (!xhr) {
+    alert('CORS not supported');
+    return;
+  }
+  var elem = document.getElementById("news");
+  xhr.onload = function() {
+    var xmlDoc = xhr.responseXML;
+    // var xml = $.parseXML(xmlDoc);
+    // var $xml = $(xml);
+    // var $articles = $xml.find("article");
+    // alert($xml.html());
+    // // for (i = 0; i < $article.length; i++) {
+    // //   elem.innerHTML += $article[i].find("title")[0].text;
+    // //   elem.innerHTML += '<hr>';
+    // // }
+    var articles = xmlDoc.getElementsByTagName("article");
+    if (articles.length == 0) {
+      document.getElementById("news").innerHTML = "Sorry, no news were found.";
+      return;
+    }
+    var article = articles[0];
+    var title = article.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+    var description = article.getElementsByTagName("description")[0].childNodes[0].nodeValue;
+    var website = article.getElementsByTagName("source")[0].lastChild.childNodes[0].nodeValue;
+    var published_at = article.getElementsByTagName("published_at")[0].childNodes[0].nodeValue.split(" ")[0];
+    document.getElementById("news").innerHTML = title+'<br>'+description+'<br>'+website+' - '+published_at+'<hr>';
+    for (i = 1; i < articles.length; i++) {
+      var article = articles[i];
+      var title = article.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+      var description = article.getElementsByTagName("description")[0].childNodes[0].nodeValue;
+      var website = article.getElementsByTagName("source")[0].lastChild.childNodes[0].nodeValue;
+      var published_at = article.getElementsByTagName("published_at")[0].childNodes[0].nodeValue.split(" ")[0];
+      document.getElementById("news").innerHTML += title+'<br>'+description+'<br>'+website+' - '+published_at+'<hr>';
+    }
+  }
+  xhr.onerror = function() {
+    alert('Woops, there was an error making the request.');
+  }
+  xhr.send();
+}
+</script>
