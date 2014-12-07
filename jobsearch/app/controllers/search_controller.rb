@@ -4,12 +4,14 @@ require 'xmlsimple'
 include REXML
 
 class SearchController < ApplicationController
+
+
 	def search
 		uri = URI('http://api.indeed.com/ads/apisearch?publisher=7860093636562111&q=java&l=austin%2C+tx&sort=&radius=&st=&jt=&start=&limit=1&fromage=&filter=&latlong=1&co=us&chnl=&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29&v=2')
-		hash={'keyword'=>'sql','location'=>'buffalo'
+		hash={'keyword'=>session[:keyword][0]['name'],'location'=> session[:location]['name']
     		}
 		urlHead = "http://api.indeed.com/ads/apisearch?publisher=7860093636562111"
-		urlMid = "&q="+hash['keyword']+"&l="+hash['location']
+		urlMid = "&q="+hash['keyword']+"&l="+hash['location'].gsub(/,/, '').gsub(/ /, '+')
 		urlTail = "&sort=&radius=&st=&jt=&start=&limit=&fromage=&filter=&latlong=1&co=us&chnl=&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29&v=2"
 		url=urlHead+urlMid+urlTail
 		url = URI(url)
@@ -23,7 +25,7 @@ class SearchController < ApplicationController
        end
 		if @jobs_found.nil?
 		   @jobs_found=[]
-		   flash[:notice] = "No jobs found" 
+		   flash[:notice] = "No jobs found"
 		 else
 		 		session[:jobs] = @jobs_found
 		 end  	 

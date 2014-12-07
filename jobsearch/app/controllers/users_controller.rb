@@ -9,6 +9,8 @@ class UsersController < ApplicationController
     @location = @user['location']
     @data = @user['likes']
     @keyword = @data['data']
+    session[:location] = @location
+    session[:keyword] = @keyword
 	end
 
 end

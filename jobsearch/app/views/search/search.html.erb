@@ -1,6 +1,6 @@
 <h1>Job Board search results</h1>
    <span class="message"><%= h flash[:notice] %></span>
-   <br/><%= link_to "Back to search", "http://apps.facebook.com/job_board", :target => '_top'%> &nbsp;
+   <br/>
    <%= link_to "Display jobs on a map", "../map/index", :target => '_top'%><br/>
    <ol>
    <%@jobs_found.each { |job|  %>
