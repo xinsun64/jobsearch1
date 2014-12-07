@@ -21,6 +21,103 @@
   </div>
 </div>
 <script>
+
+function getCompData(comp) {
+  /* OVERVIEW UPDATE */
+  // "http://api.crunchbase.com/v/2/organizations?query=amazon&user_key=300f7644a14557a314f82154661c941a&page=1"
+  // "http://api.crunchbase.com/v/2/organization/amazon?user_key=300f7644a14557a314f82154661c941a"
+  var ovElem = document.getElementById("overview");
+  var nsElem = document.getElementById("news");
+  var bgElem = document.getElementById("blog");
+  var ovQuery = gon.permalinks[comp];
+  var nsQuery = "";
+  if (ovQuery == null) {
+    ovElem.innerHTML = "Sorry, no overview was found.";
+    nsQuery = comp.split(" ")[0];
+  } else {
+    nsQuery = ovQuery.split("/")[1];
+    $(document).ready(function(){
+      $.ajax({
+        url: "http://api.crunchbase.com/v/2/"+ovQuery+"?user_key=300f7644a14557a314f82154661c941a",
+        dataType: 'jsonp',
+        cache: true,
+        success: function(data){
+          var prop = data['data']['properties'];
+          var text = "";
+          text += "<b>Description:</b><br>" + prop['description'] + "<hr>";
+          text += "<b>Founded on:</b><br>" + prop['founded_on_year'] + "<hr>";
+          text += "<b>Employee number:</b><br>" + prop['num_employees_min'] + " - " + prop['num_employees_max'] + "<hr>";
+          ovElem.innerHTML = text;
+        },
+        error: function() { 
+          ovElem.innerHTML = "Sorry, no overview was found.";
+        } 
+      });
+    })
+  }
+
+  /* NEWS AND BLOG UPDATE */
+  var url = 'http://api.newscred.com/articles?access_key=c4bcc3f7c9bf9ec159f51da0a86ca658&get_topics=False&pagesize=100&min_length=50&max_length=200&query=+"' + nsQuery + '"';
+  var xhr = createCORSRequest('GET', url);
+  if (!xhr) {
+    alert('CORS not supported');
+    return;
+  }
+  xhr.onload = function() {
+    var xmlDoc = xhr.responseXML;
+    var articles = xmlDoc.getElementsByTagName("article");
+    if (articles.length == 0) {
+      nsElem.innerHTML = "Sorry, no news were found.";
+      bgElem.innerHTML = "Sorry, no blog news were found.";
+      return;
+    } else {
+      nsElem.innerHTML = "";
+      bgElem.innerHTML = "";
+    }
+    var article = articles[0];
+    var title = article.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+    var description = article.getElementsByTagName("description")[0].childNodes[0].nodeValue;
+    var website = article.getElementsByTagName("source")[0].lastChild.childNodes[0].nodeValue;
+    var published_at = article.getElementsByTagName("published_at")[0].childNodes[0].nodeValue.split(" ")[0];
+    var isBlog = 0;
+    try {
+      var isBlog = article.getElementsByTagName("is_blog")[0].childNodes[0].nodeValue;
+    } catch(error) {
+      // pass
+    }
+    if (isBlog == 1) {
+      bgElem.innerHTML = title+'<br>'+description+'<br>'+website+' - '+published_at+'<hr>';
+      isBlog = 0;
+    } else {
+      nsElem.innerHTML = title+'<br>'+description+'<br>'+website+' - '+published_at+'<hr>';
+      isBlog = 0;
+    } 
+    for (i = 1; i < articles.length; i++) {
+      article = articles[i];
+      title = article.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+      description = article.getElementsByTagName("description")[0].childNodes[0].nodeValue;
+      website = article.getElementsByTagName("source")[0].lastChild.childNodes[0].nodeValue;
+      ublished_at = article.getElementsByTagName("published_at")[0].childNodes[0].nodeValue.split(" ")[0];
+      try {
+        isBlog = article.getElementsByTagName("is_blog")[0].childNodes[0].nodeValue;
+      } catch (error) {
+        // pass
+      }
+      if (isBlog == 1) {
+        bgElem.innerHTML += title+'<br>'+description+'<br>'+website+' - '+published_at+'<hr>';
+        isBlog = 0;
+      } else {
+        nsElem.innerHTML += title+'<br>'+description+'<br>'+website+' - '+published_at+'<hr>';
+        isBlog = 0;
+      }
+    }
+  }
+  xhr.onerror = function() {
+    alert('Woops, there was an error making the request.');
+  }
+  xhr.send();
+}
+
 function createCORSRequest(method, url){
   var xhr = new XMLHttpRequest();
   if ("withCredentials" in xhr){
@@ -35,53 +132,4 @@ function createCORSRequest(method, url){
   return xhr;
 }
 
-function getElement(text, elem) {
-  return text.match('<title>(.*)?</title>');
-}
-
-function getCompData(comp) {
-  var url = 'http://api.newscred.com/articles?access_key=c4bcc3f7c9bf9ec159f51da0a86ca658&get_topics=False&pagesize=20&min_length=10&max_length=200&query=+"' + comp + '"';
-
-  // &sources=681039b652bd135d172f96332fb57f2c
-  var xhr = createCORSRequest('GET', url);
-  if (!xhr) {
-    alert('CORS not supported');
-    return;
-  }
-  var elem = document.getElementById("news");
-  xhr.onload = function() {
-    var xmlDoc = xhr.responseXML;
-    // var xml = $.parseXML(xmlDoc);
-    // var $xml = $(xml);
-    // var $articles = $xml.find("article");
-    // alert($xml.html());
-    // // for (i = 0; i < $article.length; i++) {
-    // //   elem.innerHTML += $article[i].find("title")[0].text;
-    // //   elem.innerHTML += '<hr>';
-    // // }
-    var articles = xmlDoc.getElementsByTagName("article");
-    if (articles.length == 0) {
-      document.getElementById("news").innerHTML = "Sorry, no news were found.";
-      return;
-    }
-    var article = articles[0];
-    var title = article.getElementsByTagName("title")[0].childNodes[0].nodeValue;
-    var description = article.getElementsByTagName("description")[0].childNodes[0].nodeValue;
-    var website = article.getElementsByTagName("source")[0].lastChild.childNodes[0].nodeValue;
-    var published_at = article.getElementsByTagName("published_at")[0].childNodes[0].nodeValue.split(" ")[0];
-    document.getElementById("news").innerHTML = title+'<br>'+description+'<br>'+website+' - '+published_at+'<hr>';
-    for (i = 1; i < articles.length; i++) {
-      var article = articles[i];
-      var title = article.getElementsByTagName("title")[0].childNodes[0].nodeValue;
-      var description = article.getElementsByTagName("description")[0].childNodes[0].nodeValue;
-      var website = article.getElementsByTagName("source")[0].lastChild.childNodes[0].nodeValue;
-      var published_at = article.getElementsByTagName("published_at")[0].childNodes[0].nodeValue.split(" ")[0];
-      document.getElementById("news").innerHTML += title+'<br>'+description+'<br>'+website+' - '+published_at+'<hr>';
-    }
-  }
-  xhr.onerror = function() {
-    alert('Woops, there was an error making the request.');
-  }
-  xhr.send();
-}
 </script>

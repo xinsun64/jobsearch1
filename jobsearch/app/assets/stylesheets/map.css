@@ -95,6 +95,7 @@ table, th, td {
 	font-size: 15px;
 	font-family: Arial, Helvetica, Verdana, sans-serif;
 	border: 1px solid gray;
+	height: auto;
 }
 
 /* JQuery CSS Modification */
@@ -109,7 +110,7 @@ table, th, td {
 .ui-tabs .ui-tabs-panel {
 	font-family: Arial, Helvetica, Verdana, sans-serif;
 	font-size:10pt;
-	height: 300px;
+	height: 400px;
 	overflow: auto;
 } 
 

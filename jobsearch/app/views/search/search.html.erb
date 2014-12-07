@@ -1,15 +1,12 @@
 <h1>Job Board search results</h1>
    <span class="message"><%= h flash[:notice] %></span>
-   <br/><%= link_to "Back to search", "http://apps.facebook.com/job_
-   board", :target => '_top'%> &nbsp;
-   <%= link_to "Display jobs on a map", "http://www.yourdomainname.com/
-   map", :target => '_top'%><br/>
+   <br/><%= link_to "Back to search", "http://apps.facebook.com/job_board", :target => '_top'%> &nbsp;
+   <%= link_to "Display jobs on a map", "../map/index", :target => '_top'%><br/>
    <ol>
    <%@jobs_found.each { |job|  %>
    <li class="title">
 
-   <a href="<%= job['url']%>" target="_new"><%= h job['jobtitle']%>, <%=
-   h job['company']%>
+   <a href="<%= job['url']%>" target="_new"><%= h job['jobtitle']%>, <%= h job['company']%>
    </a>
    </li>
    <div class="description">
@@ -23,6 +20,5 @@
    <br/>
    <span id=indeed_at><a href="http://www.indeed.com/">jobs</a>
    by <a href="http://www.indeed.com/" title="Job Search">
-   <img src="http://www.indeed.com/p/jobsearch.gif" style="border: 0;
-   vertical-align: middle;" alt="job search">
+   <img src="http://www.indeed.com/p/jobsearch.gif" style="border: 0; vertical-align: middle;" alt="job search">
    </a></span>
