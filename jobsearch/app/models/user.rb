@@ -2,14 +2,9 @@ class User < ActiveRecord::Base
 
   def self.koala(auth)
     access_token = auth['token']
-    facebook = Koala::Facebook::API.new(access_token)
-    facebook.get_object("me?fields=name,location,likes.limit(1)")
-    @location = facebook.location
-    if facebook.likes.category == "Interests"
-    	@Interests = facebook.likes.name
-    else
-    	@Interests = nil
-    end
+    facebook = Koala::Facebook::API.new('CAACEdEose0cBAKszUQZCUA87ZAp2vtJvnh2XrRWEWVotPqqTmdlEW1BgdpIt0l1m51AZByKZApypHM3H1xdZC7ZBo8lGiHwH0I9COQYhuVmLW3MEm1JTISOXCdSH2putKpXjPSigL6eBA3d041u8PKksnYROa69YEjzZAkPDZC5N4vb1VhgADZBelhy7hCnPaUeWCd7hcNHqNXoQiaSRNvFDl')
+    facebook.get_object("me?fields=name,id,location,likes{name}")
+  
   end
 
 end
